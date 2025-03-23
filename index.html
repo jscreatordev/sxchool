@@ -4,18 +4,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Link Embeder</title>
-  <link href="style.css" rel="stylesheet" type="text/css">
-  <meta name="google-signin-client_id" content="1044286278489-rr4lvgj8mfkhg6fnv0lmb2588kuv9uki.apps.googleusercontent.com">
+  <title>Google Sign-In</title>
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://apis.google.com https://accounts.google.com;">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome (for Google icon) -->
+  <!-- Font Awesome (for icons) -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous" defer></script>
 
   <!-- Google API -->
-  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     body {
@@ -69,21 +70,24 @@
 <body>
 
   <!-- Google Sign-In Button -->
-  <button class="google-btn" onclick="signIn()">
+  <button class="google-btn" id="google-signin-btn">
     <i class="fab fa-google"></i> Sign In with Google
   </button>
 
   <!-- Google Sign-Out Button -->
-  <button class="sign-out-btn" onclick="signOut()">
+  <button class="sign-out-btn" id="sign-out-btn">
     <i class="fas fa-sign-out-alt"></i> Sign Out
   </button>
 
   <script>
+    let auth2; // Global variable for Google Auth instance
+
     function initGoogleAuth() {
       gapi.load('auth2', function () {
         gapi.auth2.init({
           client_id: "1044286278489-rr4lvgj8mfkhg6fnv0lmb2588kuv9uki.apps.googleusercontent.com"
         }).then(() => {
+          auth2 = gapi.auth2.getAuthInstance();
           console.log("Google Auth Initialized");
         }).catch(error => {
           console.error("Google Auth Init Error:", error);
@@ -92,32 +96,37 @@
     }
 
     function signIn() {
-      var auth2 = gapi.auth2.getAuthInstance();
+      if (!auth2) {
+        console.error("Google Auth instance not found.");
+        return;
+      }
       auth2.signIn().then(function (googleUser) {
         var profile = googleUser.getBasicProfile();
         console.log("User signed in:");
-        console.log("ID: " + profile.getId());
-        console.log("Name: " + profile.getName());
-        console.log("Email: " + profile.getEmail());
+        console.log("ID:", profile.getId());
+        console.log("Name:", profile.getName());
+        console.log("Email:", profile.getEmail());
 
-        document.querySelector(".google-btn").style.display = "none";
-        document.querySelector(".sign-out-btn").style.display = "block";
+        document.getElementById("google-signin-btn").style.display = "none";
+        document.getElementById("sign-out-btn").style.display = "block";
       }).catch(function (error) {
-        console.log("Sign-in error:", error);
+        console.error("Sign-in error:", error);
       });
     }
 
     function signOut() {
-      var auth2 = gapi.auth2.getAuthInstance();
+      if (!auth2) return;
       auth2.signOut().then(function () {
         console.log("User signed out.");
-        document.querySelector(".google-btn").style.display = "block";
-        document.querySelector(".sign-out-btn").style.display = "none";
+        document.getElementById("google-signin-btn").style.display = "block";
+        document.getElementById("sign-out-btn").style.display = "none";
       });
     }
 
     window.onload = function () {
       initGoogleAuth();
+      document.getElementById("google-signin-btn").onclick = signIn;
+      document.getElementById("sign-out-btn").onclick = signOut;
     };
   </script>
 
