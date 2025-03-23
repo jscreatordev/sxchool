@@ -1,20 +1,140 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Link Embeder</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link href="style.css" rel="stylesheet" type="text/css">
+  <meta name="google-signin-client_id" content="1044286278489-rr4lvgj8mfkhg6fnv0lmb2588kuv9uki.apps.googleusercontent.com">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome (for Google icon) -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      background-color: #f5f5f5;
+      padding: 50px;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #4285F4;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      width: 250px;
+      margin: 10px auto;
+    }
+
+    .google-btn:hover {
+      background-color: #357ae8;
+    }
+
+    .google-btn i {
+      font-size: 20px;
+      margin-right: 10px;
+    }
+
+    .sign-out-btn {
+      background-color: #d9534f;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      width: 250px;
+      margin: 10px auto;
+    }
+
+    .sign-out-btn:hover {
+      background-color: #c9302c;
+    }
+  </style>
+
 </head>
 
 <body>
 
-  <script src="script.js"></script>
+  <!-- Google Sign-In Button -->
+  <button class="google-btn" onclick="signIn()">
+    <i class="fab fa-google"></i> Sign In with Google
+  </button>
+
+  <!-- Google Sign-Out Button -->
+  <button class="sign-out-btn" onclick="signOut()" style="display: none;">
+    <i class="fas fa-sign-out-alt"></i> Sign Out
+  </button>
+
+  <!-- Google Sign-In API -->
   <script src="https://apis.google.com/js/platform.js" async defer></script>
-  <div class="g-signin2" data-onsuccess="onSignIn"></div>
-  <meta name="google-signin-client_id"
-    content="1044286278489-rr4lvgj8mfkhg6fnv0lmb2588kuv9uki.apps.googleusercontent.com">
+
+  <script>
+    function signIn() {
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signIn().then(function (googleUser) {
+        onSignIn(googleUser);
+      }).catch(function (error) {
+        console.log("Sign-in error:", error);
+      });
+    }
+
+    function onSignIn(googleUser) {
+      var profile = googleUser.getBasicProfile();
+      console.log("User signed in:");
+      console.log("ID: " + profile.getId());
+      console.log("Name: " + profile.getName());
+      console.log("Email: " + profile.getEmail());
+
+      document.querySelector(".google-btn").style.display = "none";
+      document.querySelector(".sign-out-btn").style.display = "block";
+    }
+
+    function signOut() {
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        console.log("User signed out.");
+        document.querySelector(".google-btn").style.display = "block";
+        document.querySelector(".sign-out-btn").style.display = "none";
+      });
+    }
+
+    // Initialize Google Sign-In
+    function initGoogleAuth() {
+      gapi.load('auth2', function () {
+        gapi.auth2.init({
+          client_id: "1044286278489-rr4lvgj8mfkhg6fnv0lmb2588kuv9uki.apps.googleusercontent.com"
+        });
+      });
+    }
+
+    window.onload = function () {
+      initGoogleAuth();
+    };
+
+      gapi.auth2.init({
+        client_id: "1044286278489-rr4lvgj8mfkhg6fnv0lmb2588kuv9uki.apps.googleusercontent.com",
+        redirect_uri: "https://sxchool.vercel.app/auth"
+      });
+
+  </script>
 
 </body>
 
